@@ -1,6 +1,7 @@
 import React, {FormEvent, useState} from 'react'
 import * as Styles from '../../assets/style';
 import WelcomeTitle from './WelcomeTitle';
+import axios from 'axios';
 function Form() {
   const [data, setData] = useState({
     salary: 100,
@@ -14,7 +15,11 @@ function Form() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(data);
+    axios.post(`http://localhost:5000/predict`, data).then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.log(err);
+    })
   }
     return (
         <>
@@ -107,17 +112,3 @@ function Form() {
 }
 
 export default Form
-
-/*
-
-sample = {{   
-    "salary(thousand kzt)": 0,
-    "n_of_individual_projects": 2,
-    "motivation_r": 1,
-    "relationship_with_others_r": 0.1,
-    "communication_skills_r": 0.1,
-    "task_management_r": 0.8,
-    "total_rating": 0.9,
-}}
-
-*/
