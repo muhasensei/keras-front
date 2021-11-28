@@ -16,6 +16,7 @@ function Form() {
 
   const [prediction, setPrediction] = useState(-1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const showResults = () => {
     let promotion: Promotion = 'fail'
@@ -29,11 +30,13 @@ function Form() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     setLoading(true);
+    setError('')
     e.preventDefault();
     axios.post(`http://localhost:5000/predict`, data).then((res) => {
       setPrediction(res.data.prediction)
     }).catch((err) => {
-      console.log(err);
+      setPrediction(-1);
+      setError(err.message)
     }).finally(() => {
       setLoading(false);
     })
@@ -124,6 +127,11 @@ function Form() {
               prediction >= 0 && showResults()
               }
             </Styles.Results>
+            {
+              error && <Styles.ResultsText promotion='fail'>
+                {error}
+              </Styles.ResultsText>
+            }
             <Styles.SubmitButton type='submit'>
               {
                 loading && <i className="fa fa-spinner fa-spin"></i>

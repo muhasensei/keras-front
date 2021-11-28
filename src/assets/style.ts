@@ -91,7 +91,7 @@ export const SubmitButton = styled.button`
     }
 `;
 
-export const Results = styled.p`
+export const Results = styled.div`
     font-weight: 600;
     font-size: 18px;
     line-height: 22px;
@@ -108,6 +108,7 @@ export const FadeIn = keyframes`
 
 export const ResultsText = styled.p<{promotion: Promotion}>`
     animation: ${FadeIn} 1.5s;
+    text-align: center;
     color: ${(props) => props.promotion === 'success' ? '#09BF52' : '#F5443A'};
 `;
 
