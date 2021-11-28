@@ -2,9 +2,10 @@ import React, {FormEvent, useState} from 'react'
 import * as Styles from '../../assets/style';
 import WelcomeTitle from './WelcomeTitle';
 import axios from 'axios';
+import { Promotion } from './types';
 function Form() {
   const [data, setData] = useState({
-    salary: 100,
+    salary: 0.1,
     projects: 0,
     motivation: 0,
     relationship: 0,
@@ -13,12 +14,28 @@ function Form() {
     total_rating: 0,
   });
 
+  const [prediction, setPrediction] = useState(-1);
+  const [loading, setLoading] = useState(false);
+
+  const showResults = () => {
+    let promotion: Promotion = 'fail'
+    if(prediction > 80) {
+      promotion = 'success';
+    }
+    return <Styles.ResultsText promotion={promotion}>
+      {promotion === 'success' ? 'Yes!' : 'No...'} (Employee had {prediction}% chance)
+    </Styles.ResultsText>
+  }
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     e.preventDefault();
     axios.post(`http://localhost:5000/predict`, data).then((res) => {
-      console.log(res);
+      setPrediction(res.data.prediction)
     }).catch((err) => {
       console.log(err);
+    }).finally(() => {
+      setLoading(false);
     })
   }
     return (
@@ -27,14 +44,12 @@ function Form() {
           <Styles.Form onSubmit={(e) => handleSubmit(e)}>
             <Styles.InputGroup>
               <Styles.InputWrapper>
-                <label htmlFor="salary">Salary (thousand kzt)</label>
-                <input
-                  required
-                  value={data.salary}
-                  type='number'
-                  id='salary'
-                  onChange={(e) => setData({...data, salary: +(e.target.value)})}
-                />
+                <label htmlFor="salary">Salary</label>
+                <Styles.Select id='salary' value={data.salary} onChange={(e) => setData({...data, salary: +e.target.value})}>
+                  <option value={0.1}>Low</option>
+                  <option value={0.3}>Average</option>
+                  <option value={0.5}>High</option>
+                </Styles.Select>
               </Styles.InputWrapper>
               <Styles.InputWrapper>
                 <label htmlFor="projects">Projects</label>
@@ -43,7 +58,7 @@ function Form() {
                   value={data.projects}
                   type='number'
                   id='projects'
-                  onChange={(e) => setData({...data, projects: +(e.target.value)})}
+                  onChange={(e) => setData({...data, projects: +e.target.value})}
                 />
               </Styles.InputWrapper>
             </Styles.InputGroup>
@@ -55,7 +70,7 @@ function Form() {
                   value={data.motivation}
                   type='range'
                   id='motivation'
-                  onChange={(e) => setData({...data, motivation: +(e.target.value)})}
+                  onChange={(e) => setData({...data, motivation: +e.target.value})}
                 />
               </Styles.InputWrapper>
               <Styles.InputWrapper>
@@ -65,7 +80,7 @@ function Form() {
                   value={data.relationship}
                   type='range' 
                   id='relationship'
-                  onChange={(e) => setData({...data, relationship: +(e.target.value)})}
+                  onChange={(e) => setData({...data, relationship: +e.target.value})}
                 />
               </Styles.InputWrapper>
             </Styles.InputGroup>
@@ -77,7 +92,7 @@ function Form() {
                   value={data.task_management}
                   type='range'
                   id='task_management'
-                  onChange={(e) => setData({...data, task_management: +(e.target.value)})}
+                  onChange={(e) => setData({...data, task_management: +e.target.value})}
                 />
               </Styles.InputWrapper>
               <Styles.InputWrapper>
@@ -87,7 +102,7 @@ function Form() {
                   value={data.communication}
                   type='range'
                   id='communication'
-                  onChange={(e) => setData({...data, communication: +(e.target.value)})}
+                  onChange={(e) => setData({...data, communication: +e.target.value})}
                 />
               </Styles.InputWrapper>
             </Styles.InputGroup>
@@ -99,12 +114,23 @@ function Form() {
                   value={data.total_rating}
                   type='range'
                   id='total_rating'
-                  onChange={(e) => setData({...data, total_rating: +(e.target.value)})}
+                  onChange={(e) => setData({...data, total_rating: +e.target.value})}
                 />
               </Styles.InputWrapper>
             </Styles.InputGroup>
+            <Styles.Results>
+              Should we promote this employee?
+              {
+              prediction >= 0 && showResults()
+              }
+            </Styles.Results>
             <Styles.SubmitButton type='submit'>
-              Get result
+              {
+                loading && <i className="fa fa-spinner fa-spin"></i>
+              }
+              {
+                !loading && 'Get results'
+              }
             </Styles.SubmitButton>
           </Styles.Form>
         </>  

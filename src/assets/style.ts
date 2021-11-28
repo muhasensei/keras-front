@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { Promotion } from '../components/Form/types';
 
 export const Main = styled.div`
     width: 100%;
@@ -88,4 +89,33 @@ export const SubmitButton = styled.button`
     :hover, :focus, :focus-within {
         background: #4c1569;
     }
+`;
+
+export const Results = styled.p`
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 22px;
+    text-align: center;
+`;
+
+export const FadeIn = keyframes`
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+`;
+
+export const ResultsText = styled.p<{promotion: Promotion}>`
+    animation: ${FadeIn} 1.5s;
+    color: ${(props) => props.promotion === 'success' ? '#09BF52' : '#F5443A'};
+`;
+
+export const Select = styled.select`
+    border: 1px solid #fff;
+    transition: all 0.4s;
+    border-radius: 4px;
+    padding: 5px;
+    background: #e4cef0;
+    cursor: pointer;
 `;
