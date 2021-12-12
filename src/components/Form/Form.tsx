@@ -1,8 +1,10 @@
-import React, {FormEvent, useState} from 'react'
+import React, {FormEvent, useEffect, useState} from 'react'
 import * as Styles from '../../assets/style';
 import WelcomeTitle from './WelcomeTitle';
 import axios from 'axios';
-import { Promotion } from './types';
+import {SubmitButton} from "../ui-kits/SubmitButton";
+import {ShowResults} from "../ui-kits/ShowResults";
+import {Algorithm} from '../ui-kits/types';
 function Form() {
   const [data, setData] = useState({
     salary: 0.1,
@@ -14,28 +16,65 @@ function Form() {
     total_rating: 0,
   });
 
-  const [prediction, setPrediction] = useState(-1);
+  const [predictions, setPredictions] = useState({
+    forest: -1,
+    gradient: -1,
+    keras: -1,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const showResults = () => {
-    let promotion: Promotion = 'fail'
-    if(prediction > 80) {
-      promotion = 'success';
-    }
-    return <Styles.ResultsText promotion={promotion}>
-      {promotion === 'success' ? 'Yes!' : 'No...'} (Employee had {prediction}% chance)
-    </Styles.ResultsText>
-  }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    console.log(predictions);
+  }, [predictions]);
+
+  const handleSubmitGradient = (e: FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     setError('')
-    e.preventDefault();
-    axios.post(`http://localhost:5000/predict`, data).then((res) => {
-      setPrediction(res.data.prediction)
+    axios.post(`http://localhost:5000/predict/gradient`, data).then((res) => {
+      const predicted = +res.data.prediction.replace(/[\[\]']+/g, '')
+      setPredictions({
+        ...predictions,
+        gradient: predicted,
+      })
     }).catch((err) => {
-      setPrediction(-1);
+      setError(err.message)
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
+
+
+  const handleSubmitForest = (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('')
+    axios.post(`http://localhost:5000/predict/forest`, data).then((res) => {
+      const predicted = +res.data.prediction.replace(/[\[\]']+/g, '')
+      setPredictions({
+        ...predictions,
+        forest: predicted,
+      })
+    }).catch((err) => {
+      setError(err.message)
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
+
+
+  const handleSubmitKeras = (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('')
+    axios.post(`http://localhost:5000/predict/keras`, data).then((res) => {
+      setPredictions({
+        ...predictions,
+        keras: res.data.prediction > 80 ? 1 : 0,
+      });
+    }).catch((err) => {
       setError(err.message)
     }).finally(() => {
       setLoading(false);
@@ -44,7 +83,7 @@ function Form() {
     return (
         <>
           <WelcomeTitle />
-          <Styles.Form onSubmit={(e) => handleSubmit(e)}>
+          <Styles.Form>
             <Styles.InputGroup>
               <Styles.InputWrapper>
                 <label htmlFor="salary">Salary</label>
@@ -59,7 +98,7 @@ function Form() {
                 <input
                   required
                   value={data.projects}
-                  type='number'
+                  type='tel'
                   id='projects'
                   onChange={(e) => setData({...data, projects: +e.target.value})}
                 />
@@ -124,7 +163,12 @@ function Form() {
             <Styles.Results>
               Should we promote this employee?
               {
-              prediction >= 0 && showResults()
+                Object.entries(predictions).map((pred) => {
+                  if(pred[1] >= 0) {
+                    return <ShowResults key={pred[0]} prediction={pred[1]} algorithm={pred[0] as Algorithm} />
+                  }
+                  return <p key={pred[0]}></p>
+                })
               }
             </Styles.Results>
             {
@@ -132,14 +176,21 @@ function Form() {
                 {error}
               </Styles.ResultsText>
             }
-            <Styles.SubmitButton type='submit'>
-              {
-                loading && <i className="fa fa-spinner fa-spin"></i>
-              }
-              {
-                !loading && 'Get results'
-              }
-            </Styles.SubmitButton>
+          <SubmitButton
+              label='Random Forest'
+              loading={loading}
+              handleSubmit={handleSubmitForest}
+          />
+          <SubmitButton
+              label='Gradient Boosting'
+              loading={loading}
+              handleSubmit={handleSubmitGradient}
+          />
+          <SubmitButton
+              label='Keras Sequential'
+              loading={loading}
+              handleSubmit={handleSubmitKeras}
+          />
           </Styles.Form>
         </>  
     )

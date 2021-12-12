@@ -74,7 +74,7 @@ export const InputWrapper = styled.div`
     }
 `;
 
-export const SubmitButton = styled.button`
+export const StyledButton = styled.button`
     padding: 10px;
     border: none;
     background: #8338AA;
