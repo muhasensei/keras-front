@@ -1,4 +1,4 @@
-import React, {FormEvent, useState} from 'react'
+import React, {FormEvent, useEffect, useState} from 'react'
 import * as Styles from '../../assets/style';
 import WelcomeTitle from './WelcomeTitle';
 import axios from 'axios';
@@ -24,6 +24,13 @@ function Form() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    setPredictions({
+      forest: -1,
+      gradient: -1,
+      keras: -1,
+    });
+  }, [data]);
   const handleSubmitGradient = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
