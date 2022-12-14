@@ -43,7 +43,7 @@ function Form() {
         ];
         Promise.all(requests)
             .then(response => {
-                const predictedValues = response.map((el) => +el.data.prediction.toString().replace(/[\[\]']+/g, ''))
+                const predictedValues = response.map((el) => +el.data.prediction.toString().replace(/[[\]']+/g, ''))
                 setPredictions({
                     gradient: predictedValues[0],
                     forest: predictedValues[1],
