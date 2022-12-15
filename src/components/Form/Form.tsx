@@ -6,7 +6,7 @@ import {SubmitButton} from "../ui-kits/SubmitButton";
 import {ShowResults} from "../ui-kits/ShowResults";
 import {Algorithm} from '../ui-kits/types';
 
-const SERVER_URL = 'https://muhasensei.loca.lt';
+const SERVER_URL = 'https://muhasensei.loca.lt/';
 
 function Form() {
     const [data, setData] = useState({
