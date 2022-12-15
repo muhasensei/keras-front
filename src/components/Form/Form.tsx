@@ -39,15 +39,9 @@ function Form() {
         setLoading(true);
         setError('')
         const requests = [
-            axios.post(`${SERVER_URL}predict/gradient`, data, {withCredentials: true, headers: {
-                'Content-Type': 'application/json'
-                }}),
-            axios.post(`${SERVER_URL}predict/forest`, data, {withCredentials: true, headers: {
-                'Content-Type': 'application/json'
-                }}),
-            axios.post(`${SERVER_URL}predict/keras`, data, {withCredentials: true, headers: {
-                'Content-Type': 'application/json'
-                }})
+            axios.post(`${SERVER_URL}predict/gradient`, data),
+            axios.post(`${SERVER_URL}predict/forest`, data),
+            axios.post(`${SERVER_URL}predict/keras`, data)
         ];
         Promise.all(requests)
             .then(response => {
