@@ -39,9 +39,9 @@ function Form() {
         setLoading(true);
         setError('')
         const requests = [
-            axios.post(`${SERVER_URL}predict/gradient`, data),
-            axios.post(`${SERVER_URL}predict/forest`, data),
-            axios.post(`${SERVER_URL}predict/keras`, data)
+            axios.post(`${SERVER_URL}predict/gradient`, data, {withCredentials: true}),
+            axios.post(`${SERVER_URL}predict/forest`, data, {withCredentials: true}),
+            axios.post(`${SERVER_URL}predict/keras`, data, {withCredentials: true})
         ];
         Promise.all(requests)
             .then(response => {
