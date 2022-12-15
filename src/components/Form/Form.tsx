@@ -6,6 +6,8 @@ import {SubmitButton} from "../ui-kits/SubmitButton";
 import {ShowResults} from "../ui-kits/ShowResults";
 import {Algorithm} from '../ui-kits/types';
 
+const SERVER_URL = 'https://muhasensei.loca.lt';
+
 function Form() {
     const [data, setData] = useState({
         salary: 0.1,
@@ -37,9 +39,9 @@ function Form() {
         setLoading(true);
         setError('')
         const requests = [
-            axios.post(`http://localhost:5000/predict/gradient`, data),
-            axios.post(`http://localhost:5000/predict/forest`, data),
-            axios.post(`http://localhost:5000/predict/keras`, data)
+            axios.post(`${SERVER_URL}predict/gradient`, data),
+            axios.post(`${SERVER_URL}predict/forest`, data),
+            axios.post(`${SERVER_URL}predict/keras`, data)
         ];
         Promise.all(requests)
             .then(response => {
