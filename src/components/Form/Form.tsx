@@ -6,7 +6,8 @@ import {SubmitButton} from "../ui-kits/SubmitButton";
 import {ShowResults} from "../ui-kits/ShowResults";
 import {Algorithm} from '../ui-kits/types';
 
-const SERVER_URL = 'https://muhasensei.loca.lt/';
+// const SERVER_URL = 'http://localhost:5000/';
+const SERVER_URL = 'https://da38-176-64-28-104.eu.ngrok.io/';
 
 function Form() {
     const [data, setData] = useState({
@@ -43,21 +44,24 @@ function Form() {
             axios.post(`${SERVER_URL}predict/forest`, data),
             axios.post(`${SERVER_URL}predict/keras`, data)
         ];
-        Promise.all(requests)
-            .then(response => {
-                const predictedValues = response.map((el) => +el.data.prediction.toString().replace(/[[\]']+/g, ''))
-                setPredictions({
-                    gradient: predictedValues[0],
-                    forest: predictedValues[1],
-                    keras: predictedValues[2] > 80 ? 1 : 0
+
+        requests[0].then((resGradient) => {
+            requests[1].then((resForest) => {
+                requests[2].then((resKeras) => {
+                    setPredictions({
+                        gradient: +resGradient.data.prediction.toString().replace(/[[\]']+/g, ''),
+                        forest: +resForest.data.prediction.toString().replace(/[[\]']+/g, ''),
+                        keras: +resKeras.data.prediction.toString().replace(/[[\]']+/g, '') > 80 ? 1 : 0
+                    })
                 })
             })
-            .catch(error => {
-                console.log(error)
-                setError(error)
-            }).finally(() => {
-            setLoading(false);
-        });
+        }).catch(error => {
+            console.log(error)
+            setError(error)
+        })
+            .finally(() => {
+                setLoading(false);
+            });
     }
     return (
         <>
